@@ -9,6 +9,21 @@ namespace monoGameBlackjack
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+
+        public enum GameState
+        {
+            menu,
+            game
+        }
+
+
+        private GameState gState;   
+
+        private Texture2D Testtexture;
+
+
+
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -27,6 +42,7 @@ namespace monoGameBlackjack
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            Testtexture = Content.Load<Texture2D>($"{2}_clubs");
             // TODO: use this.Content to load your game content here
         }
 
