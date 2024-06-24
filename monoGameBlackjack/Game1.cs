@@ -10,6 +10,11 @@ namespace monoGameBlackjack
         private SpriteBatch _spriteBatch;
 
 
+        private Rectangle tester;
+        private MouseState prev;
+
+
+        Player player;
         public enum GameState
         {
             menu,
@@ -34,7 +39,9 @@ namespace monoGameBlackjack
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            player = new Player();
+            player.intialize();
+            tester = new Rectangle(100,100,100,100);
             base.Initialize();
         }
 
@@ -43,6 +50,7 @@ namespace monoGameBlackjack
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Testtexture = Content.Load<Texture2D>($"{2}_clubs");
+            player.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -51,17 +59,31 @@ namespace monoGameBlackjack
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            MouseState currentMouseState = Mouse.GetState();
             // TODO: Add your update logic here
+
+
+            if (currentMouseState.LeftButton == ButtonState.Released &&
+                prev.LeftButton == ButtonState.Pressed &&
+                    tester.Contains(currentMouseState.Position))
+            {
+                tester.X += 80;
+            }
+
+            prev = currentMouseState;
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Green);
+            _spriteBatch.Begin();
 
+            _spriteBatch.Draw(Testtexture, tester,Color.White);
             // TODO: Add your drawing code here
 
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }
