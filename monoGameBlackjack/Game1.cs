@@ -83,6 +83,8 @@ namespace monoGameBlackjack
             _spriteBatch.Draw(Testtexture, tester,Color.White);
             // TODO: Add your drawing code here
 
+            player.draw(_spriteBatch);
+
             _spriteBatch.End();
             base.Draw(gameTime);
         }

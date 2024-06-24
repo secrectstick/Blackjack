@@ -214,9 +214,9 @@ namespace monoGameBlackjack
 
         //draw
 
-        public void draw()
+        public void draw(SpriteBatch sb)
         {
-
+            sb.Draw(cardImgs[33],new Rectangle(270,50,100,100),Color.White);
         }
     }
 }
