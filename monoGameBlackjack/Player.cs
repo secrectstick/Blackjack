@@ -8,7 +8,13 @@ namespace monoGameBlackjack
 {
     internal class Player
     {
+        public enum handState
+        {
+            single,
+            doubled
+        }
 
+        // fields
 
         public Player() 
         { 
@@ -16,6 +22,11 @@ namespace monoGameBlackjack
         
         }
 
+        // reset fields
+
+        //load content
+
+        //intialize
 
         // update
 
