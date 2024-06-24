@@ -22,7 +22,7 @@ namespace monoGameBlackjack
         
         }
 
-        // reset fields
+        // reset (fields)
 
         //load content
 
