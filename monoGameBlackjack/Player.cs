@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using static monoGameBlackjack.Game1;
 
 namespace monoGameBlackjack
 {
@@ -20,6 +21,7 @@ namespace monoGameBlackjack
         }
 
         // fields
+
         //player info
         private List<Card> mainHand;
         private int mainHandTot;
@@ -32,7 +34,12 @@ namespace monoGameBlackjack
         //fsm info
         private handState hState;
         private bool holding;
+        private bool holdingAlt1;
+        private bool holdingAlt2;
         private bool doubleDown;
+        private int aceCount;
+        private int aceCountAlt1;
+        private int aceCountAlt2;
 
         // dealer info
         private List<Card> dealerHand;
@@ -44,6 +51,23 @@ namespace monoGameBlackjack
 
         //deck
         Deck deck;
+
+        // input info
+        private MouseState cur;
+        private MouseState last;
+
+        // button rects
+        private Rectangle yesRect;
+        private Rectangle noRect;
+        private Rectangle hitRect;
+        private Rectangle holdRect;
+        private Rectangle hitRectAlt1;
+        private Rectangle holdRectAlt1;
+        private Rectangle hitRectAlt2;
+        private Rectangle holdRectAlt2;
+
+        // font
+        private SpriteFont Arial24;
 
         public Player() 
         {
@@ -94,7 +118,7 @@ namespace monoGameBlackjack
         }
 
 
-        // second reset for redealing hands
+        // second reset for redealing hands // just call intialize
 
 
 
@@ -122,6 +146,18 @@ namespace monoGameBlackjack
                 cardImgs[i - 2] = newCard;
             }
             cardBack = Content.Load<Texture2D>("back_red_basic");
+
+            yesRect = new Rectangle(300,300,50,50);
+            noRect = new Rectangle(375,300,50,50);
+            hitRect = new Rectangle(100,500,50,50);
+            holdRect = new Rectangle(100, 570, 50, 50);
+            holdRectAlt1 = new Rectangle(100, 400, 50, 50);
+            hitRectAlt1 = new Rectangle(100, 470, 50, 50);
+            holdRectAlt2 = new Rectangle(100, 540, 50, 50);
+            hitRectAlt2 = new Rectangle(100,610,50,50);
+
+            Arial24 = Content.Load<SpriteFont>("Arial");
+
         }
 
 
@@ -144,6 +180,7 @@ namespace monoGameBlackjack
                 else
                 {
                     //deal with ace
+                    aceCount++;
                 }
                 mainHand.Add(temp);
 
@@ -171,30 +208,32 @@ namespace monoGameBlackjack
 
                 if (mainHand[0].number <= 10)
                 {
-                    mainHandTot += mainHand[0].number;
+                    altHand1Tot += mainHand[0].number;
                 }
                 else if (mainHand[0].number < 14)
                 {
-                    mainHandTot += 10;
+                    altHand1Tot += 10;
                 }
                 else
                 {
                     //deal with ace
+                    aceCountAlt1++;
                 }
 
                 altHand2.Add(mainHand[1]);
 
                 if (mainHand[1].number <= 10)
                 {
-                    mainHandTot += mainHand[1].number;
+                    altHand2Tot += mainHand[1].number;
                 }
                 else if (mainHand[1].number < 14)
                 {
-                    mainHandTot += 10;
+                    altHand2Tot += 10;
                 }
                 else
                 {
                     //deal with ace
+                    aceCountAlt2++;
                 }
             }
 
@@ -206,7 +245,89 @@ namespace monoGameBlackjack
 
         public void update()
         {
+            cur = Mouse.GetState();
 
+            switch (hState)
+            {
+                case handState.single:
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    hitRect.Contains(cur.Position))
+                    {
+                        Card temp = (deck.ShuffDeck.Pop());
+
+                        if (temp.number <= 10)
+                        {
+                            mainHandTot += temp.number;
+                        }
+                        else if (temp.number < 14)
+                        {
+                            mainHandTot += 10;
+                        }
+                        else
+                        {
+                            //deal with ace
+                            aceCount++;
+                        }
+                        mainHand.Add(temp);
+                    }
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    holdRect.Contains(cur.Position))
+                    {
+                        holding = true;
+                    }
+
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    (cur.X > 600))
+                    {
+                        intialize();
+                    }
+
+                    break;
+                case handState.doubled:
+                    
+                    break;
+            }
+
+            if (aceCountAlt2 > 0)
+            {
+
+            }
+            else if(aceCountAlt1 > 0)
+            {
+
+            }
+            else if(aceCount > 0)
+            {
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    yesRect.Contains(cur.Position))
+                {
+                    mainHandTot+=11;
+                    aceCount--;
+                }
+
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    noRect.Contains(cur.Position))
+                {
+                    mainHandTot++;
+                    aceCount--;
+                }
+                
+            }
+
+            if(holding == true)
+            {
+
+            }
+
+            last = cur;
         }
 
 
@@ -216,7 +337,34 @@ namespace monoGameBlackjack
 
         public void draw(SpriteBatch sb)
         {
-            sb.Draw(cardImgs[33],new Rectangle(270,50,100,100),Color.White);
+
+            switch (hState)
+            {
+                case handState.single:
+                    for(int i =0; i< mainHand.Count;i++)
+                    {
+                        sb.Draw(cardImgs[mainHand[i].position -1], new Rectangle(100 + (i * 125), 600 , 100, 100), Color.White);
+                    }
+
+                    sb.Draw(cardImgs[0],hitRect, Color.White);
+
+                    
+
+                    if (aceCount > 0)
+                    {
+                        sb.Draw(cardImgs[5], yesRect, Color.White);
+                        sb.Draw(cardImgs[34], noRect, Color.White);
+                    }
+
+                    string text = "total " + mainHandTot;
+                    //sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
+                    break;
+                case handState.doubled: 
+                    break;
+            }
+
+
+            //sb.Draw(cardBack,new Rectangle(270,50,100,100),Color.White);
         }
     }
 }

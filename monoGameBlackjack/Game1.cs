@@ -99,12 +99,7 @@ namespace monoGameBlackjack
 
                     break;
                 case GameState.game:
-                    if (currentMouseState.LeftButton == ButtonState.Released &&
-                    prev.LeftButton == ButtonState.Pressed &&
-                    tester.Contains(currentMouseState.Position))
-                    {
-                        tester.X += 80;
-                    }
+                    player.update();
                     break;
             }
 
@@ -145,7 +140,7 @@ namespace monoGameBlackjack
 
                     break; 
                 case GameState.game:
-                    _spriteBatch.Draw(Testtexture, tester, Color.White);
+                    //_spriteBatch.Draw(Testtexture, tester, Color.White);
                     player.draw(_spriteBatch);
                     break;
             }
