@@ -357,12 +357,21 @@ namespace monoGameBlackjack
                     }
 
                     string text = "total " + mainHandTot;
-                    //sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
+                    sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
                     break;
                 case handState.doubled: 
                     break;
             }
 
+            if (holding == true)
+            {
+
+            }
+            else
+            {
+                sb.Draw(cardBack, new Rectangle(70, 50, 100, 100), Color.White);
+                sb.Draw(cardImgs[dealerHand[1].position-1], new Rectangle(200, 50, 100, 100),Color.White);
+            }
 
             //sb.Draw(cardBack,new Rectangle(270,50,100,100),Color.White);
         }
