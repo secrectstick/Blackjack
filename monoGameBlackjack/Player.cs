@@ -44,6 +44,7 @@ namespace monoGameBlackjack
         private int aceCountAlt2;
         private bool win;
         private bool lost;
+        private bool doubBrk;
 
         // dealer info
         private List<Card> dealerHand;
@@ -91,11 +92,15 @@ namespace monoGameBlackjack
             deck = new Deck();
             win = false;
             lost = false;
+            holdingAlt1 = false ;
+            holdingAlt2 = false;
         }
 
         // reset 
         public void reset()
         {
+            holdingAlt1 = false;
+            holdingAlt2 = false;
             altHand1Tot = 0;
             altHand2Tot = 0;
             dealerHandTot = 0;
@@ -303,8 +308,118 @@ namespace monoGameBlackjack
                     }
 
                     break;
-                case handState.doubled:
-                    
+                case handState.doubled:////////////////////////////////////////////////////////////////////////
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    (cur.X > 600))
+                    {
+                        intialize();
+                    }
+
+                    if (doubleDown == false)
+                    {
+                        if (cur.LeftButton == ButtonState.Released &&
+                        last.LeftButton == ButtonState.Pressed &&
+                        yesRect.Contains(cur.Position))
+                        {
+                            doubleDown = true;
+                        }
+
+                        if (cur.LeftButton == ButtonState.Released &&
+                        last.LeftButton == ButtonState.Pressed &&
+                        noRect.Contains(cur.Position))
+                        {
+                            hState=handState.single;
+                        }
+                    }
+
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    hitRectAlt1.Contains(cur.Position) && aceCountAlt1 == 0 && aceCountAlt2 == 0 && doubleDown==true)
+                    {
+                        Card temp = (deck.ShuffDeck.Pop());
+
+                        if (temp.number <= 10)
+                        {
+                            altHand1Tot += temp.number;
+                        }
+                        else if (temp.number < 14)
+                        {
+                            altHand1Tot += 10;
+                        }
+                        else
+                        {
+                            //deal with ace
+                            aceCountAlt1++;
+                        }
+                        altHand1.Add(temp);
+
+                        
+                    }
+
+                    if (altHand1Tot > 21 && altHand2Tot >21)
+                    {
+                        lost = true;
+
+                    }
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    holdRectAlt1.Contains(cur.Position) && aceCountAlt1 == 0 && aceCountAlt2 == 0 && doubleDown == true)
+                    {
+                        holdingAlt1 = true;
+                    }
+
+                    /////////////////////////////////////////////////////////////
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    hitRectAlt2.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true)
+                    {
+                        Card temp = (deck.ShuffDeck.Pop());
+
+                        if (temp.number <= 10)
+                        {
+                            altHand2Tot += temp.number;
+                        }
+                        else if (temp.number < 14)
+                        {
+                            altHand2Tot += 10;
+                        }
+                        else
+                        {
+                            //deal with ace
+                            aceCountAlt2++;
+                        }
+                        altHand2.Add(temp);
+
+
+                    }
+
+
+                    if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    holdRectAlt1.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true)
+                    {
+                        holdingAlt2 = true;
+                    }
+
+                    if (holdingAlt2 && holdingAlt1)
+                    {
+                        holding = true;
+                    }
+
+                    if(altHand1Tot > 21 && holdingAlt2)
+                    {
+                        holding = true;
+                    }
+
+                    if (altHand2Tot > 21 && holdingAlt1)
+                    {
+                        holding = true;
+                    }
+
                     break;
             }
 
@@ -379,11 +494,11 @@ namespace monoGameBlackjack
                     {
                         win = true;
                     }
-                    else if(dealerHandTot < altHand1Tot)
+                    else if((dealerHandTot < altHand1Tot) && altHand1Tot<= 21)
                     {
                         win = true;
                     }
-                    else if(dealerHandTot < altHand2Tot)
+                    else if((dealerHandTot < altHand2Tot) && altHand1Tot <= 21)
                     {
                         win = true;
                     }
@@ -431,6 +546,34 @@ namespace monoGameBlackjack
                     sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
                     break;
                 case handState.doubled: 
+
+                    // draw double down
+
+                    if(altHand1Tot <= 21)
+                    {
+                        for (int i = 0; i < mainHand.Count-1; i++)
+                        {
+                            // systen.debug.writeline to figure out what position    // altHand1[i].position - 1
+                            sb.Draw(cardImgs[altHand1[i].position - 1], new Rectangle(100 + (i * 125), 500, 100, 100), Color.White);
+
+                            // draw hit and hold buttons
+
+                            // yes and no for ace count
+                        }
+                    }
+
+                    if (altHand2Tot <= 21)
+                    {
+                        for (int i = 0; i < mainHand.Count-1; i++)
+                        {
+                            //altHand2[i].position - 1
+                            sb.Draw(cardImgs[altHand2[i].position - 1], new Rectangle(100 + (i * 125), 650, 100, 100), Color.White);
+                        }
+                        // draw hit and hold buttons
+
+                        // yes and no for ace count
+                    }
+
                     break;
             }
 
