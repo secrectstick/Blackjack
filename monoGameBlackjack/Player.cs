@@ -346,6 +346,7 @@ namespace monoGameBlackjack
                 
             }
 
+            // dealer logic
             if(holding == true)
             {
                 if (dealerHandTot < 17)
