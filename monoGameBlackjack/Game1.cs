@@ -12,7 +12,7 @@ namespace monoGameBlackjack
 
         private Rectangle tester;
         private MouseState prev;
-
+        private MouseState currentMouseState;
 
         Player player;
         public enum GameState
@@ -25,8 +25,14 @@ namespace monoGameBlackjack
         private GameState gState;   
 
         private Texture2D Testtexture;
+        private Texture2D playUp;
+        private Texture2D playDown;
+        private Texture2D endUp;
+        private Texture2D endDown;
 
 
+        private Rectangle startButton;
+        private Rectangle endButton;
 
 
         public Game1()
@@ -39,9 +45,16 @@ namespace monoGameBlackjack
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 800;
+            _graphics.ApplyChanges();
+
             player = new Player();
             player.intialize();
             tester = new Rectangle(100,100,100,100);
+            startButton =new Rectangle(350,150,50,50);
+            endButton = new Rectangle(350,225,50,50);
+            gState = GameState.menu;
             base.Initialize();
         }
 
@@ -50,6 +63,10 @@ namespace monoGameBlackjack
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Testtexture = Content.Load<Texture2D>($"{2}_clubs");
+            playDown = Content.Load<Texture2D>("PlayClick");
+            playUp = Content.Load<Texture2D>("PlayBtn");
+            endUp = Content.Load<Texture2D>("ExitClick");
+            endDown = Content.Load<Texture2D>("ExitBtn");
             player.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
@@ -59,16 +76,40 @@ namespace monoGameBlackjack
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            MouseState currentMouseState = Mouse.GetState();
+            currentMouseState = Mouse.GetState();
             // TODO: Add your update logic here
 
-
-            if (currentMouseState.LeftButton == ButtonState.Released &&
-                prev.LeftButton == ButtonState.Pressed &&
-                    tester.Contains(currentMouseState.Position))
+            switch (gState)
             {
-                tester.X += 80;
+                case GameState.menu:
+
+                    if (currentMouseState.LeftButton == ButtonState.Released &&
+                    prev.LeftButton == ButtonState.Pressed &&
+                    startButton.Contains(currentMouseState.Position))
+                    {
+                        gState = GameState.game;
+                    }
+
+                    if (currentMouseState.LeftButton == ButtonState.Released &&
+                    prev.LeftButton == ButtonState.Pressed &&
+                    endButton.Contains(currentMouseState.Position))
+                    {
+                        Exit();
+                    }
+
+                    break;
+                case GameState.game:
+                    if (currentMouseState.LeftButton == ButtonState.Released &&
+                    prev.LeftButton == ButtonState.Pressed &&
+                    tester.Contains(currentMouseState.Position))
+                    {
+                        tester.X += 80;
+                    }
+                    break;
             }
+
+
+            
 
             prev = currentMouseState;
 
@@ -80,10 +121,39 @@ namespace monoGameBlackjack
             GraphicsDevice.Clear(Color.Green);
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(Testtexture, tester,Color.White);
+            switch (gState)
+            {
+                case GameState.menu:
+                    if (startButton.Contains(currentMouseState.Position))
+                    {
+                        _spriteBatch.Draw(playDown, startButton, Color.White);
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw(playUp, startButton, Color.White);
+                    }
+
+                    if (endButton.Contains(currentMouseState.Position))
+                    {
+                        _spriteBatch.Draw(endDown, endButton, Color.White);
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw(endUp, endButton, Color.White);
+                    }
+
+
+                    break; 
+                case GameState.game:
+                    _spriteBatch.Draw(Testtexture, tester, Color.White);
+                    player.draw(_spriteBatch);
+                    break;
+            }
+
+            
             // TODO: Add your drawing code here
 
-            player.draw(_spriteBatch);
+            
 
             _spriteBatch.End();
             base.Draw(gameTime);
