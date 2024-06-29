@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using static monoGameBlackjack.Game1;
+using System.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace monoGameBlackjack
 {
@@ -40,6 +42,8 @@ namespace monoGameBlackjack
         private int aceCount;
         private int aceCountAlt1;
         private int aceCountAlt2;
+        private bool win;
+        private bool lost;
 
         // dealer info
         private List<Card> dealerHand;
@@ -85,6 +89,8 @@ namespace monoGameBlackjack
             dealerHandTot = 0;
             cardImgs = new Texture2D[52];
             deck = new Deck();
+            win = false;
+            lost = false;
         }
 
         // reset 
@@ -114,7 +120,8 @@ namespace monoGameBlackjack
             {
                 dealerHand.Clear();
             }
-
+            win = false;
+            lost = false;
         }
 
 
@@ -197,6 +204,7 @@ namespace monoGameBlackjack
                 else
                 {
                     //deal with ace
+                    dealerHandTot += 1;
                 }
                 dealerHand.Add(dtemp);
             }
@@ -253,7 +261,7 @@ namespace monoGameBlackjack
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    hitRect.Contains(cur.Position))
+                    hitRect.Contains(cur.Position)&& aceCount==0)
                     {
                         Card temp = (deck.ShuffDeck.Pop());
 
@@ -271,11 +279,17 @@ namespace monoGameBlackjack
                             aceCount++;
                         }
                         mainHand.Add(temp);
+
+                        if (mainHandTot > 21)
+                        {
+                            lost = true;
+                            
+                        }
                     }
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    holdRect.Contains(cur.Position))
+                    holdRect.Contains(cur.Position) && aceCount == 0)
                     {
                         holding = true;
                     }
@@ -310,6 +324,11 @@ namespace monoGameBlackjack
                 {
                     mainHandTot+=11;
                     aceCount--;
+                    if (mainHandTot > 21)
+                    {
+                        lost = true;
+
+                    }
                 }
 
                 if (cur.LeftButton == ButtonState.Released &&
@@ -318,13 +337,64 @@ namespace monoGameBlackjack
                 {
                     mainHandTot++;
                     aceCount--;
+                    if (mainHandTot > 21)
+                    {
+                        lost = true;
+
+                    }
                 }
                 
             }
 
             if(holding == true)
             {
+                if (dealerHandTot < 17)
+                {
+                    Card dtemp = (deck.ShuffDeck.Pop());
 
+                    if (dtemp.number <= 10)
+                    {
+                        dealerHandTot += dtemp.number;
+                    }
+                    else if (dtemp.number < 14)
+                    {
+                        dealerHandTot += 10;
+                    }
+                    else
+                    {
+                        //deal with ace
+                        dealerHandTot += 1;
+                    }
+                    dealerHand.Add(dtemp);
+                    if (dealerHandTot > 21)
+                    {
+                        win= true;
+                    }
+                }
+
+                if(lost == false && win == false)
+                {
+                    if(dealerHandTot < mainHandTot)
+                    {
+                        win = true;
+                    }
+                    else if(dealerHandTot < altHand1Tot)
+                    {
+                        win = true;
+                    }
+                    else if(dealerHandTot < altHand2Tot)
+                    {
+                        win = true;
+                    }
+
+                    
+
+                    if (win == false)
+                    {
+                        lost=true;
+                    }
+                }
+                
             }
 
             last = cur;
@@ -347,8 +417,8 @@ namespace monoGameBlackjack
                     }
 
                     sb.Draw(cardImgs[0],hitRect, Color.White);
+                    sb.Draw(cardImgs[51], holdRect, Color.White);
 
-                    
 
                     if (aceCount > 0)
                     {
@@ -363,14 +433,34 @@ namespace monoGameBlackjack
                     break;
             }
 
+
+
+            if (lost ==true)
+            {
+                sb.DrawString(Arial24, " you lose", new Vector2(300, 300), Color.White);
+                sb.DrawString(Arial24, "reset:", new Vector2(310, 360), Color.White);
+            }
+
+            if (win == true)
+            {
+                sb.DrawString(Arial24, " you win", new Vector2(300, 300), Color.White);
+                sb.DrawString(Arial24, " reset:", new Vector2(320, 360), Color.White);
+            }
+
+
             if (holding == true)
             {
-
+                for (int i = 0; i < dealerHand.Count; i++)
+                {
+                    sb.Draw(cardImgs[dealerHand[i].position - 1], new Rectangle(100 + (i * 125), 100, 100, 100), Color.White);
+                }
+                string text = "dtotal " + dealerHandTot;
+                sb.DrawString(Arial24, text, new Vector2(600, 200), Color.White);
             }
             else
             {
-                sb.Draw(cardBack, new Rectangle(70, 50, 100, 100), Color.White);
-                sb.Draw(cardImgs[dealerHand[1].position-1], new Rectangle(200, 50, 100, 100),Color.White);
+                sb.Draw(cardBack, new Rectangle(100, 100, 100, 100), Color.White);
+                sb.Draw(cardImgs[dealerHand[1].position-1], new Rectangle(225, 100, 100, 100),Color.White);
             }
 
             //sb.Draw(cardBack,new Rectangle(270,50,100,100),Color.White);
