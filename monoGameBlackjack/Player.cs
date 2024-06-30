@@ -403,7 +403,7 @@ namespace monoGameBlackjack
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    holdRectAlt1.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true)
+                    holdRectAlt2.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true)
                     {
                         holdingAlt2 = true;
                     }
@@ -426,6 +426,7 @@ namespace monoGameBlackjack
                     break;
             }
 
+            // player selecting ace value logic
             if (aceCountAlt2 > 0)
             {
                 if (cur.LeftButton == ButtonState.Released &&
@@ -603,6 +604,9 @@ namespace monoGameBlackjack
                         sb.Draw(cardImgs[51], holdRectAlt1, Color.White);
 
 
+                        string a1text = "total " + altHand1Tot;
+                        sb.DrawString(Arial24, a1text, new Vector2(200, 200), Color.White);
+
                         // yes and no for ace count
                         if (aceCountAlt1 > 0)
                         {
@@ -619,9 +623,11 @@ namespace monoGameBlackjack
                             sb.Draw(cardImgs[altHand2[i].position - 1], new Rectangle(100 + (i * 125), 650, 100, 100), Color.White);
                         }
                         // draw hit and hold buttons
-                        sb.Draw(cardImgs[0], hitRectAlt2, Color.White);
-                        sb.Draw(cardImgs[51], holdRectAlt2, Color.White);
+                        sb.Draw(cardImgs[1], hitRectAlt2, Color.White);
+                        sb.Draw(cardImgs[50], holdRectAlt2, Color.White);
 
+                        string a2text = "total " + altHand2Tot;
+                        sb.DrawString(Arial24, a2text, new Vector2(350, 200), Color.White);
 
                         // yes and no for ace count
                         if (aceCountAlt2 > 0)
@@ -635,17 +641,18 @@ namespace monoGameBlackjack
             }
 
 
-
-            if (lost ==true)
-            {
-                sb.DrawString(Arial24, " you lose", new Vector2(300, 300), Color.White);
-                sb.DrawString(Arial24, "reset:", new Vector2(310, 360), Color.White);
-            }
-            else if (win == true)
+            if (win == true)
             {
                 sb.DrawString(Arial24, " you win", new Vector2(300, 300), Color.White);
                 sb.DrawString(Arial24, " reset:", new Vector2(320, 360), Color.White);
             }
+            else if (lost ==true)
+            {
+                
+                    sb.DrawString(Arial24, " you lose", new Vector2(300, 300), Color.White);
+                    sb.DrawString(Arial24, "reset:", new Vector2(310, 360), Color.White);
+            }
+            
 
 
             if (holding == true)
