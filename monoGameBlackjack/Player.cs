@@ -603,7 +603,7 @@ namespace monoGameBlackjack
                     }
 
 
-                    if (holdRect.Contains(cur.Position))
+                    if (holdRect.Contains(cur.Position)|| holding)
                     {
                         sb.Draw(holdDown, holdRect, Color.White);
                     }
@@ -654,7 +654,7 @@ namespace monoGameBlackjack
                         }
 
 
-                        if (holdRectAlt1.Contains(cur.Position))
+                        if (holdRectAlt1.Contains(cur.Position) || holdingAlt1)
                         {
                             sb.Draw(holdDown, holdRectAlt1, Color.White);
                         }
@@ -699,7 +699,7 @@ namespace monoGameBlackjack
                         }
 
 
-                        if (holdRectAlt2.Contains(cur.Position))
+                        if (holdRectAlt2.Contains(cur.Position)|| holdingAlt2)
                         {
                             sb.Draw(holdDown, holdRectAlt2, Color.White);
                         }
