@@ -127,6 +127,9 @@ namespace monoGameBlackjack
             }
             win = false;
             lost = false;
+            aceCount = 0;
+            aceCountAlt1 = 0;
+            aceCountAlt2 = 0;
         }
 
 
@@ -337,7 +340,7 @@ namespace monoGameBlackjack
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    hitRectAlt1.Contains(cur.Position) && aceCountAlt1 == 0 && aceCountAlt2 == 0 && doubleDown==true)
+                    hitRectAlt1.Contains(cur.Position) && aceCountAlt1 == 0 && aceCountAlt2 == 0 && doubleDown==true && altHand1Tot<=21)
                     {
                         Card temp = (deck.ShuffDeck.Pop());
 
@@ -375,7 +378,7 @@ namespace monoGameBlackjack
                     /////////////////////////////////////////////////////////////
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    hitRectAlt2.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true)
+                    hitRectAlt2.Contains(cur.Position) && aceCountAlt2 == 0 && aceCountAlt1 == 0 && doubleDown == true && altHand2Tot <= 21)
                     {
                         Card temp = (deck.ShuffDeck.Pop());
 
@@ -425,11 +428,43 @@ namespace monoGameBlackjack
 
             if (aceCountAlt2 > 0)
             {
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    yesRect.Contains(cur.Position))
+                {
+                    altHand2Tot+=11;
+                    aceCountAlt2--;
+                    
+                }
 
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    noRect.Contains(cur.Position))
+                {
+                    altHand2Tot++;
+                    aceCountAlt2--;
+                    
+                }
             }
             else if(aceCountAlt1 > 0)
             {
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    yesRect.Contains(cur.Position))
+                {
+                    altHand1Tot += 11;
+                    aceCountAlt1--;
 
+                }
+
+                if (cur.LeftButton == ButtonState.Released &&
+                    last.LeftButton == ButtonState.Pressed &&
+                    noRect.Contains(cur.Position))
+                {
+                    altHand1Tot++;
+                    aceCountAlt1--;
+
+                }
             }
             else if(aceCount > 0)
             {
@@ -545,33 +580,55 @@ namespace monoGameBlackjack
                     string text = "total " + mainHandTot;
                     sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
                     break;
-                case handState.doubled: 
+                case handState.doubled:
 
-                    // draw double down
-
-                    if(altHand1Tot <= 21)
+                    // draw double down yes and no
+                    if (doubleDown == false)
                     {
-                        for (int i = 0; i < mainHand.Count-1; i++)
+                        sb.Draw(cardImgs[5], yesRect, Color.White);
+                        sb.Draw(cardImgs[34], noRect, Color.White);
+                    }
+
+                    if (altHand1Tot <= 21)
+                    {
+                        for (int i = 0; i < altHand1.Count; i++)
                         {
                             // systen.debug.writeline to figure out what position    // altHand1[i].position - 1
                             sb.Draw(cardImgs[altHand1[i].position - 1], new Rectangle(100 + (i * 125), 500, 100, 100), Color.White);
 
-                            // draw hit and hold buttons
+                            
+                        }
+                        // draw hit and hold buttons
+                        sb.Draw(cardImgs[0], hitRectAlt1, Color.White);
+                        sb.Draw(cardImgs[51], holdRectAlt1, Color.White);
 
-                            // yes and no for ace count
+
+                        // yes and no for ace count
+                        if (aceCountAlt1 > 0)
+                        {
+                            sb.Draw(cardImgs[5], yesRect, Color.White);
+                            sb.Draw(cardImgs[34], noRect, Color.White);
                         }
                     }
 
                     if (altHand2Tot <= 21)
                     {
-                        for (int i = 0; i < mainHand.Count-1; i++)
+                        for (int i = 0; i < altHand2.Count; i++)
                         {
                             //altHand2[i].position - 1
                             sb.Draw(cardImgs[altHand2[i].position - 1], new Rectangle(100 + (i * 125), 650, 100, 100), Color.White);
                         }
                         // draw hit and hold buttons
+                        sb.Draw(cardImgs[0], hitRectAlt2, Color.White);
+                        sb.Draw(cardImgs[51], holdRectAlt2, Color.White);
+
 
                         // yes and no for ace count
+                        if (aceCountAlt2 > 0)
+                        {
+                            sb.Draw(cardImgs[5], yesRect, Color.White);
+                            sb.Draw(cardImgs[34], noRect, Color.White);
+                        }
                     }
 
                     break;
@@ -584,8 +641,7 @@ namespace monoGameBlackjack
                 sb.DrawString(Arial24, " you lose", new Vector2(300, 300), Color.White);
                 sb.DrawString(Arial24, "reset:", new Vector2(310, 360), Color.White);
             }
-
-            if (win == true)
+            else if (win == true)
             {
                 sb.DrawString(Arial24, " you win", new Vector2(300, 300), Color.White);
                 sb.DrawString(Arial24, " reset:", new Vector2(320, 360), Color.White);
