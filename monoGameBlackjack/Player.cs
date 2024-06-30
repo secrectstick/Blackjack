@@ -74,6 +74,24 @@ namespace monoGameBlackjack
         // font
         private SpriteFont Arial24;
 
+        //textures 
+        private Texture2D hitUp;
+        private Texture2D hitDown;
+        private Texture2D holdUp;
+        private Texture2D holdDown;
+
+        // add ons
+        private Texture2D yesUp;
+        private Texture2D yesDown;
+        private Texture2D noUp;
+        private Texture2D noDown;
+        private Texture2D menuUP;
+        private Texture2D menuDOWN;
+        private Texture2D resetUp;
+        private Texture2D resetDown;
+
+
+
         public Player() 
         {
             mainHandTot = 0;
@@ -164,14 +182,21 @@ namespace monoGameBlackjack
 
             yesRect = new Rectangle(300,300,50,50);
             noRect = new Rectangle(375,300,50,50);
-            hitRect = new Rectangle(100,500,50,50);
-            holdRect = new Rectangle(100, 570, 50, 50);
-            holdRectAlt1 = new Rectangle(100, 400, 50, 50);
-            hitRectAlt1 = new Rectangle(100, 470, 50, 50);
-            holdRectAlt2 = new Rectangle(100, 540, 50, 50);
-            hitRectAlt2 = new Rectangle(100,610,50,50);
+            hitRect = new Rectangle(45,500,50,50);
+            holdRect = new Rectangle(45, 570, 50, 50);
+            holdRectAlt1 = new Rectangle(45, 570, 50, 50);
+            hitRectAlt1 = new Rectangle(45, 500, 50, 50);
+            holdRectAlt2 = new Rectangle(45, 710, 50, 50);
+            hitRectAlt2 = new Rectangle(45, 640,50,50);
 
             Arial24 = Content.Load<SpriteFont>("Arial");
+
+
+            hitUp = Content.Load<Texture2D>("ClickIcon");
+            hitDown = Content.Load<Texture2D>("PlayIconClick");
+            holdUp = Content.Load<Texture2D>("ExitIcon");
+            holdDown= Content.Load<Texture2D>("ExitIconClick");
+
 
         }
 
@@ -526,7 +551,7 @@ namespace monoGameBlackjack
 
                 if(lost == false && win == false)
                 {
-                    if(dealerHandTot < mainHandTot)
+                    if((dealerHandTot < mainHandTot) && doubleDown == false)
                     {
                         win = true;
                     }
@@ -534,7 +559,7 @@ namespace monoGameBlackjack
                     {
                         win = true;
                     }
-                    else if((dealerHandTot < altHand2Tot) && altHand1Tot <= 21)
+                    else if((dealerHandTot < altHand2Tot) && altHand2Tot <= 21)
                     {
                         win = true;
                     }
@@ -568,8 +593,24 @@ namespace monoGameBlackjack
                         sb.Draw(cardImgs[mainHand[i].position -1], new Rectangle(100 + (i * 125), 600 , 100, 100), Color.White);
                     }
 
-                    sb.Draw(cardImgs[0],hitRect, Color.White);
-                    sb.Draw(cardImgs[51], holdRect, Color.White);
+                    if (hitRect.Contains(cur.Position))
+                    {
+                        sb.Draw(hitDown, hitRect, Color.White);
+                    }
+                    else
+                    {
+                        sb.Draw(hitUp, hitRect, Color.White);
+                    }
+
+
+                    if (holdRect.Contains(cur.Position))
+                    {
+                        sb.Draw(holdDown, holdRect, Color.White);
+                    }
+                    else
+                    {
+                        sb.Draw(holdUp, holdRect, Color.White);
+                    }
 
 
                     if (aceCount > 0)
@@ -600,8 +641,29 @@ namespace monoGameBlackjack
                             
                         }
                         // draw hit and hold buttons
-                        sb.Draw(cardImgs[0], hitRectAlt1, Color.White);
-                        sb.Draw(cardImgs[51], holdRectAlt1, Color.White);
+                        //sb.Draw(cardImgs[0], hitRectAlt1, Color.White);
+                        //sb.Draw(cardImgs[51], holdRectAlt1, Color.White);
+
+                        if (hitRectAlt1.Contains(cur.Position))
+                        {
+                            sb.Draw(hitDown, hitRectAlt1, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(hitUp, hitRectAlt1, Color.White);
+                        }
+
+
+                        if (holdRectAlt1.Contains(cur.Position))
+                        {
+                            sb.Draw(holdDown, holdRectAlt1, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(holdUp, holdRectAlt1, Color.White);
+                        }
+
+
 
 
                         string a1text = "total " + altHand1Tot;
@@ -623,8 +685,29 @@ namespace monoGameBlackjack
                             sb.Draw(cardImgs[altHand2[i].position - 1], new Rectangle(100 + (i * 125), 650, 100, 100), Color.White);
                         }
                         // draw hit and hold buttons
-                        sb.Draw(cardImgs[1], hitRectAlt2, Color.White);
-                        sb.Draw(cardImgs[50], holdRectAlt2, Color.White);
+                        //sb.Draw(cardImgs[1], hitRectAlt2, Color.White);
+                        //sb.Draw(cardImgs[50], holdRectAlt2, Color.White);
+
+
+                        if (hitRectAlt2.Contains(cur.Position))
+                        {
+                            sb.Draw(hitDown, hitRectAlt2, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(hitUp, hitRectAlt2, Color.White);
+                        }
+
+
+                        if (holdRectAlt2.Contains(cur.Position))
+                        {
+                            sb.Draw(holdDown, holdRectAlt2, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(holdUp, holdRectAlt2, Color.White);
+                        }
+
 
                         string a2text = "total " + altHand2Tot;
                         sb.DrawString(Arial24, a2text, new Vector2(350, 200), Color.White);
