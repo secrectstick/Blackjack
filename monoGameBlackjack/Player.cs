@@ -45,6 +45,7 @@ namespace monoGameBlackjack
         private bool win;
         private bool lost;
         private bool doubBrk;
+        private int count;
 
         // dealer info
         private List<Card> dealerHand;
@@ -70,6 +71,7 @@ namespace monoGameBlackjack
         private Rectangle holdRectAlt1;
         private Rectangle hitRectAlt2;
         private Rectangle holdRectAlt2;
+        private Rectangle resetRect;
 
         // font
         private SpriteFont Arial24;
@@ -112,6 +114,7 @@ namespace monoGameBlackjack
             lost = false;
             holdingAlt1 = false ;
             holdingAlt2 = false;
+            count = 0;
         }
 
         // reset 
@@ -182,12 +185,13 @@ namespace monoGameBlackjack
 
             yesRect = new Rectangle(300,300,50,50);
             noRect = new Rectangle(375,300,50,50);
-            hitRect = new Rectangle(45,500,50,50);
-            holdRect = new Rectangle(45, 570, 50, 50);
+            hitRect = new Rectangle(30,600,50,50);
+            holdRect = new Rectangle(30, 670, 50, 50);
             holdRectAlt1 = new Rectangle(45, 570, 50, 50);
             hitRectAlt1 = new Rectangle(45, 500, 50, 50);
             holdRectAlt2 = new Rectangle(45, 710, 50, 50);
             hitRectAlt2 = new Rectangle(45, 640,50,50);
+            resetRect = new Rectangle(700,30,50,50);
 
             Arial24 = Content.Load<SpriteFont>("Arial");
 
@@ -196,6 +200,8 @@ namespace monoGameBlackjack
             hitDown = Content.Load<Texture2D>("PlayIconClick");
             holdUp = Content.Load<Texture2D>("ExitIcon");
             holdDown= Content.Load<Texture2D>("ExitIconClick");
+            resetUp = Content.Load<Texture2D>("OptIcon");
+            resetDown = Content.Load<Texture2D>("OptIconClick");
 
 
         }
@@ -276,6 +282,8 @@ namespace monoGameBlackjack
                     //deal with ace
                     aceCountAlt2++;
                 }
+
+                aceCount = 0;
             }
 
         }
@@ -287,7 +295,7 @@ namespace monoGameBlackjack
         public void update()
         {
             cur = Mouse.GetState();
-
+            count++;
             switch (hState)
             {
                 case handState.single:
@@ -330,7 +338,7 @@ namespace monoGameBlackjack
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    (cur.X > 600))
+                    resetRect.Contains(cur.Position))
                     {
                         intialize();
                     }
@@ -340,7 +348,7 @@ namespace monoGameBlackjack
 
                     if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
-                    (cur.X > 600))
+                    resetRect.Contains(cur.Position))
                     {
                         intialize();
                     }
@@ -352,6 +360,7 @@ namespace monoGameBlackjack
                         yesRect.Contains(cur.Position))
                         {
                             doubleDown = true;
+                            count = 0;
                         }
 
                         if (cur.LeftButton == ButtonState.Released &&
@@ -452,7 +461,7 @@ namespace monoGameBlackjack
             }
 
             // player selecting ace value logic
-            if (aceCountAlt2 > 0)
+            if (aceCountAlt2 > 0 && count>0)
             {
                 if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
@@ -472,7 +481,7 @@ namespace monoGameBlackjack
                     
                 }
             }
-            else if(aceCountAlt1 > 0)
+            else if(aceCountAlt1 > 0 && count > 0)
             {
                 if (cur.LeftButton == ButtonState.Released &&
                     last.LeftButton == ButtonState.Pressed &&
@@ -615,20 +624,54 @@ namespace monoGameBlackjack
 
                     if (aceCount > 0)
                     {
-                        sb.Draw(cardImgs[5], yesRect, Color.White);
-                        sb.Draw(cardImgs[34], noRect, Color.White);
+                        sb.DrawString(Arial24, "Would you like the ace high or low?", new Vector2(150, 250), Color.White);
+
+                        if (yesRect.Contains(cur.Position))
+                        {
+                            sb.Draw(hitDown, yesRect, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(hitUp, yesRect, Color.White);
+                        }
+
+                        if (noRect.Contains(cur.Position))
+                        {
+                            sb.Draw(holdDown, noRect, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(holdUp, noRect, Color.White);
+                        }
                     }
 
-                    string text = "total " + mainHandTot;
-                    sb.DrawString(Arial24,text,new Vector2 (200, 200), Color.White);
+                    string text = "Hand Value: " + mainHandTot;
+                    sb.DrawString(Arial24,text,new Vector2 (100, 550), Color.White);
                     break;
                 case handState.doubled:
 
                     // draw double down yes and no
                     if (doubleDown == false)
                     {
-                        sb.Draw(cardImgs[5], yesRect, Color.White);
-                        sb.Draw(cardImgs[34], noRect, Color.White);
+                        sb.DrawString(Arial24, "Would you like to split your hand?", new Vector2(150, 250), Color.White);
+
+                        if (yesRect.Contains(cur.Position))
+                        {
+                            sb.Draw(hitDown, yesRect, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(hitUp, yesRect, Color.White);
+                        }
+
+                        if (noRect.Contains(cur.Position))
+                        {
+                            sb.Draw(holdDown, noRect, Color.White);
+                        }
+                        else
+                        {
+                            sb.Draw(holdUp, noRect, Color.White);
+                        }
                     }
 
                     if (altHand1Tot <= 21)
@@ -666,14 +709,35 @@ namespace monoGameBlackjack
 
 
 
-                        string a1text = "total " + altHand1Tot;
-                        sb.DrawString(Arial24, a1text, new Vector2(200, 200), Color.White);
+                        string a1text = "Upper Hand: " + altHand1Tot;
+                        sb.DrawString(Arial24, a1text, new Vector2(100, 450), Color.White);
 
                         // yes and no for ace count
                         if (aceCountAlt1 > 0)
                         {
-                            sb.Draw(cardImgs[5], yesRect, Color.White);
-                            sb.Draw(cardImgs[34], noRect, Color.White);
+                            if(doubleDown == true)
+                            {
+                                sb.DrawString(Arial24, "Would you like the ace high or low?", new Vector2(150, 250), Color.White);
+                            }
+                            
+
+                            if (yesRect.Contains(cur.Position))
+                            {
+                                sb.Draw(hitDown, yesRect, Color.White);
+                            }
+                            else
+                            {
+                                sb.Draw(hitUp, yesRect, Color.White);
+                            }
+
+                            if (noRect.Contains(cur.Position))
+                            {
+                                sb.Draw(holdDown, noRect, Color.White);
+                            }
+                            else
+                            {
+                                sb.Draw(holdUp, noRect, Color.White);
+                            }
                         }
                     }
 
@@ -709,14 +773,36 @@ namespace monoGameBlackjack
                         }
 
 
-                        string a2text = "total " + altHand2Tot;
-                        sb.DrawString(Arial24, a2text, new Vector2(350, 200), Color.White);
+                        string a2text = "Lower Hand: " + altHand2Tot;
+                        sb.DrawString(Arial24, a2text, new Vector2(100, 610), Color.White);
 
                         // yes and no for ace count
-                        if (aceCountAlt2 > 0)
+                        if (aceCountAlt2 > 0 && doubleDown)
                         {
-                            sb.Draw(cardImgs[5], yesRect, Color.White);
-                            sb.Draw(cardImgs[34], noRect, Color.White);
+                            if (doubleDown == true)
+                            {
+                                sb.DrawString(Arial24, "Would you like the ace high or low?", new Vector2(150, 250), Color.White);
+                            }
+
+                            if (yesRect.Contains(cur.Position))
+                            {
+                                sb.Draw(hitDown, yesRect, Color.White);
+                            }
+                            else
+                            {
+                                sb.Draw(hitUp, yesRect, Color.White);
+                            }
+
+                            if (noRect.Contains(cur.Position))
+                            {
+                                sb.Draw(holdDown, noRect, Color.White);
+                            }
+                            else
+                            {
+                                sb.Draw(holdUp, noRect, Color.White);
+                            }
+
+                            
                         }
                     }
 
@@ -724,16 +810,26 @@ namespace monoGameBlackjack
             }
 
 
+            if (resetRect.Contains(cur.Position))
+            {
+                sb.Draw(resetDown,resetRect,Color.White);
+            }
+            else
+            {
+                sb.Draw(resetUp, resetRect, Color.White);
+            }
+
+
             if (win == true)
             {
-                sb.DrawString(Arial24, " you win", new Vector2(300, 300), Color.White);
-                sb.DrawString(Arial24, " reset:", new Vector2(320, 360), Color.White);
+                sb.DrawString(Arial24, "You Win!", new Vector2(300, 300), Color.White);
+                
             }
             else if (lost ==true)
             {
                 
-                    sb.DrawString(Arial24, " you lose", new Vector2(300, 300), Color.White);
-                    sb.DrawString(Arial24, "reset:", new Vector2(310, 360), Color.White);
+                    sb.DrawString(Arial24, "You Lose", new Vector2(300, 300), Color.White);
+                    
             }
             
 
@@ -744,8 +840,8 @@ namespace monoGameBlackjack
                 {
                     sb.Draw(cardImgs[dealerHand[i].position - 1], new Rectangle(100 + (i * 125), 100, 100, 100), Color.White);
                 }
-                string text = "dtotal " + dealerHandTot;
-                sb.DrawString(Arial24, text, new Vector2(600, 200), Color.White);
+                string text = "Dealer's Hand: " + dealerHandTot;
+                sb.DrawString(Arial24, text, new Vector2(100, 200), Color.White);
             }
             else
             {
