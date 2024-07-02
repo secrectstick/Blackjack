@@ -826,10 +826,8 @@ namespace monoGameBlackjack
                 
             }
             else if (lost ==true)
-            {
-                
-                    sb.DrawString(Arial24, "You Lose", new Vector2(300, 300), Color.White);
-                    
+            {               
+                sb.DrawString(Arial24, "You Lose", new Vector2(300, 300), Color.White);  
             }
             
 

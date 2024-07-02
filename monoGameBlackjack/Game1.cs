@@ -9,6 +9,7 @@ namespace monoGameBlackjack
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private SpriteFont Arial24;
 
         private Rectangle tester;
         private MouseState prev;
@@ -33,6 +34,7 @@ namespace monoGameBlackjack
 
         private Rectangle startButton;
         private Rectangle endButton;
+        private Rectangle ender;
 
 
         public Game1()
@@ -52,9 +54,11 @@ namespace monoGameBlackjack
             player = new Player();
             player.intialize();
             tester = new Rectangle(100,100,100,100);
-            startButton =new Rectangle(350,150,50,50);
-            endButton = new Rectangle(350,225,50,50);
+            startButton =new Rectangle(350,150,100,50);
+            endButton = new Rectangle(350,225,100,50);
+            ender = new Rectangle(580,30,100,50);
             gState = GameState.menu;
+            Arial24 = Content.Load<SpriteFont>("Arial");
             base.Initialize();
         }
 
@@ -99,6 +103,14 @@ namespace monoGameBlackjack
 
                     break;
                 case GameState.game:
+
+                    if (currentMouseState.LeftButton == ButtonState.Released &&
+                    prev.LeftButton == ButtonState.Pressed &&
+                    ender.Contains(currentMouseState.Position))
+                    {
+                        Exit();
+                    }
+
                     player.update();
                     break;
             }
@@ -116,6 +128,9 @@ namespace monoGameBlackjack
             GraphicsDevice.Clear(Color.Green);
             _spriteBatch.Begin();
 
+
+            //_spriteBatch.Draw(endUp, ender, Color.White);
+
             switch (gState)
             {
                 case GameState.menu:
@@ -130,17 +145,27 @@ namespace monoGameBlackjack
 
                     if (endButton.Contains(currentMouseState.Position))
                     {
-                        _spriteBatch.Draw(endDown, endButton, Color.White);
+                        _spriteBatch.Draw(endUp, endButton, Color.White);
                     }
                     else
                     {
-                        _spriteBatch.Draw(endUp, endButton, Color.White);
+                        _spriteBatch.Draw(endDown, endButton, Color.White);
                     }
+
+                    _spriteBatch.DrawString(Arial24, "BLACKJACK", new Vector2(310, 75), Color.White);
 
 
                     break; 
                 case GameState.game:
                     //_spriteBatch.Draw(Testtexture, tester, Color.White);
+                    if (ender.Contains(currentMouseState.Position))
+                    {
+                        _spriteBatch.Draw(endUp, ender, Color.White);
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw(endDown, ender, Color.White);
+                    }
                     player.draw(_spriteBatch);
                     break;
             }
