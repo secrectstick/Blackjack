@@ -534,7 +534,7 @@ namespace monoGameBlackjack
             // dealer logic
             if(holding == true)
             {
-                if (dealerHandTot < 17)
+                if (dealerHandTot < 16)
                 {
                     Card dtemp = (deck.ShuffDeck.Pop());
 
@@ -564,11 +564,11 @@ namespace monoGameBlackjack
                     {
                         win = true;
                     }
-                    else if((dealerHandTot < altHand1Tot) && altHand1Tot<= 21)
+                    if((dealerHandTot < altHand1Tot) && altHand1Tot<= 21)
                     {
                         win = true;
                     }
-                    else if((dealerHandTot < altHand2Tot) && altHand2Tot <= 21)
+                    if((dealerHandTot < altHand2Tot) && altHand2Tot <= 21)
                     {
                         win = true;
                     }
